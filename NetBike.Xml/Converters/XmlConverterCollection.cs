@@ -19,7 +19,7 @@
 
             foreach (var item in items)
             {
-                this.Add(item);
+                Add(item);
             }
         }
 
@@ -28,26 +28,26 @@
         protected override void InsertItem(int index, IXmlConverter item)
         {
             base.InsertItem(index, item);
-            this.OnCollectionChanged();
+            OnCollectionChanged();
         }
 
         protected override void ClearItems()
         {
             base.ClearItems();
-            this.OnCollectionChanged();
+            OnCollectionChanged();
         }
 
         protected override void RemoveItem(int index)
         {
             base.RemoveItem(index);
-            this.OnCollectionChanged();
+            OnCollectionChanged();
         }
 
         private void OnCollectionChanged()
         {
-            if (this.CollectionChanged != null)
+            if (CollectionChanged != null)
             {
-                this.CollectionChanged(this, new EventArgs());
+                CollectionChanged(this, new EventArgs());
             }
         }
     }

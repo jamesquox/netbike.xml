@@ -47,7 +47,7 @@
             this.typeHandling = typeHandling;
             this.defaultValueHandling = defaultValueHandling;
             this.defaultValue = defaultValue;
-            this.isOpenType = !isFinalType && valueType.IsVisible;
+            isOpenType = !isFinalType && valueType.IsVisible;
             this.item = item;
             this.nullValueHandling = nullValueHandling;
             this.mappingType = mappingType;
@@ -90,59 +90,59 @@
 
         public Type ValueType
         {
-            get { return this.valueType; }
+            get { return valueType; }
         }
 
         public XmlName Name
         {
-            get { return this.name; }
+            get { return name; }
         }
 
         public XmlMappingType MappingType
         {
-            get { return this.mappingType; }
+            get { return mappingType; }
         }
 
         public XmlTypeHandling? TypeHandling
         {
-            get { return this.typeHandling; }
+            get { return typeHandling; }
         }
 
         public XmlNullValueHandling? NullValueHandling
         {
-            get { return this.nullValueHandling; }
+            get { return nullValueHandling; }
         }
 
         public XmlDefaultValueHandling? DefaultValueHandling
         {
-            get { return this.defaultValueHandling; }
+            get { return defaultValueHandling; }
         }
 
         public object DefaultValue
         {
-            get { return this.defaultValue; }
+            get { return defaultValue; }
         }
 
         public XmlItem Item
         {
-            get { return this.item; }
+            get { return item; }
         }
 
         public IReadOnlyList<XmlKnownType> KnownTypes
         {
-            get { return this.knownTypes ?? EmptyKnownTypes; }
+            get { return knownTypes ?? EmptyKnownTypes; }
         }
 
         internal bool IsOpenType
         {
-            get { return this.isOpenType; }
+            get { return isOpenType; }
         }
 
         internal XmlMember ResolveMember(Type valueType)
         {
-            if (this.knownTypes != null)
+            if (knownTypes != null)
             {
-                foreach (var item in this.knownTypes)
+                foreach (var item in knownTypes)
                 {
                     if (item.valueType == valueType)
                     {

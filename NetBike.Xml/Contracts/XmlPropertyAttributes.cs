@@ -5,7 +5,7 @@
     using System.ComponentModel;
     using System.Reflection;
     using System.Xml.Serialization;
-    using NetBike.Xml.Contracts.Builders;
+    using Builders;
 
     internal sealed class XmlPropertyAttributes
     {

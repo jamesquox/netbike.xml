@@ -7,7 +7,7 @@
     {
         public override void WriteXml(XmlWriter writer, object value, XmlSerializationContext context)
         {
-            var valueString = this.ToString((T)value, context);
+            var valueString = ToString((T)value, context);
 
             if (valueString != null)
             {
@@ -18,7 +18,7 @@
         public override object ReadXml(XmlReader reader, XmlSerializationContext context)
         {
             var value = reader.ReadAttributeOrElementContent();
-            return this.Parse(value, context);
+            return Parse(value, context);
         }
 
         protected abstract T Parse(string value, XmlSerializationContext context);

@@ -35,14 +35,14 @@
         public XmlEnumContract Build()
         {
             return new XmlEnumContract(
-                this.ValueType,
-                this.Name,
-                this.Items != null ? this.Items : EmptyItems);
+                ValueType,
+                Name,
+                Items != null ? Items : EmptyItems);
         }
 
         public override XmlContract BuildContract()
         {
-            return this.Build();
+            return Build();
         }
     }
 }

@@ -3,8 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using NetBike.Xml.Contracts;
-    using NetBike.Xml.Converters.Objects;
+    using Contracts;
+    using Objects;
 
     public sealed class XmlKeyValuePairConverter : XmlConverterFactory
     {

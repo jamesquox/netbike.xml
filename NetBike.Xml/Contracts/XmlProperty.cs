@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using System.Reflection;
-    using NetBike.Xml.Contracts.Builders;
-    using NetBike.Xml.Utilities;
+    using Builders;
+    using Utilities;
 
     public class XmlProperty : XmlMember
     {
@@ -45,57 +45,57 @@
             this.propertyInfo = propertyInfo;
             this.isRequired = isRequired;
             this.order = order;
-            this.hasGetterAndSetter = propertyInfo.CanRead && propertyInfo.CanWrite;
+            hasGetterAndSetter = propertyInfo.CanRead && propertyInfo.CanWrite;
         }
 
         public PropertyInfo PropertyInfo
         {
-            get { return this.propertyInfo; }
+            get { return propertyInfo; }
         }
 
         public string PropertyName
         {
-            get { return this.propertyInfo.Name; }
+            get { return propertyInfo.Name; }
         }
 
         public bool IsRequired
         {
-            get { return this.isRequired; }
+            get { return isRequired; }
         }
 
         public bool IsCollection
         {
-            get { return this.isCollection; }
+            get { return isCollection; }
         }
 
         public int Order
         {
-            get { return this.order; }
+            get { return order; }
         }
 
         internal bool HasGetterAndSetter
         {
-            get { return this.hasGetterAndSetter; }
+            get { return hasGetterAndSetter; }
         }
         
         internal object GetValue(object target)
         {
-            if (this.getter == null)
+            if (getter == null)
             {
-                this.getter = DynamicWrapperFactory.CreateGetter(this.propertyInfo);
+                getter = DynamicWrapperFactory.CreateGetter(propertyInfo);
             }
 
-            return this.getter(target);
+            return getter(target);
         }
 
         internal void SetValue(object target, object value)
         {
-            if (this.setter == null)
+            if (setter == null)
             {
-                this.setter = DynamicWrapperFactory.CreateSetter(this.propertyInfo);
+                setter = DynamicWrapperFactory.CreateSetter(propertyInfo);
             }
 
-            this.setter(target, value);
+            setter(target, value);
         }
     }
 }

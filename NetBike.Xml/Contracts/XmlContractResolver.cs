@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Reflection;
     using System.Xml.Serialization;
-    using NetBike.Xml.Contracts.Builders;
+    using Builders;
 
     public class XmlContractResolver : IXmlContractResolver
     {
@@ -35,7 +35,7 @@
                 throw new ArgumentNullException("valueType");
             }
 
-            var name = this.ResolveContractName(valueType);
+            var name = ResolveContractName(valueType);
 
             if (IsBasicContract(valueType))
             {
@@ -43,19 +43,19 @@
             }
             else if (valueType.IsEnum)
             {
-                return new XmlEnumContract(valueType, name, this.ResolveEnumItems(valueType));
+                return new XmlEnumContract(valueType, name, ResolveEnumItems(valueType));
             }
 
-            var properties = this.GetProperties(valueType)
-                .Select(x => this.ResolveProperty(x))
+            var properties = GetProperties(valueType)
+                .Select(x => ResolveProperty(x))
                 .Where(x => x != null);
 
-            return new XmlObjectContract(valueType, name, properties, null, this.ResolveItem(valueType));
+            return new XmlObjectContract(valueType, name, properties, null, ResolveItem(valueType));
         }
 
         protected virtual XmlName ResolveName(Type valueType)
         {
-            return this.ResolveName(valueType, valueType.GetShortName());
+            return ResolveName(valueType, valueType.GetShortName());
         }
 
         protected virtual XmlName ResolveName(Type valueType, string name)
@@ -70,12 +70,12 @@
                 throw new ArgumentException("Name is empty.", "name");
             }
 
-            return new XmlName(this.GetLocalName(name));
+            return new XmlName(GetLocalName(name));
         }
 
         protected virtual XmlName ResolveContractName(Type valueType)
         {
-            if (!this.ignoreSystemAttributes)
+            if (!ignoreSystemAttributes)
             {
                 var rootAttribute = valueType
                     .GetCustomAttributes(typeof(XmlRootAttribute), false)
@@ -87,17 +87,17 @@
                 }
             }
 
-            return this.ResolveName(valueType);
+            return ResolveName(valueType);
         }
 
         protected virtual string GetLocalName(string name)
         {
-            return this.nameResolver(name);
+            return nameResolver(name);
         }
 
         protected virtual string GetEnumItemName(Type valueType, string name)
         {
-            return this.nameResolver(name);
+            return nameResolver(name);
         }
 
         protected virtual IEnumerable<PropertyInfo> GetProperties(Type valueType)
@@ -121,7 +121,7 @@
                 return null;
             }
 
-            return new XmlItem(itemType, this.ResolveName(itemType));
+            return new XmlItem(itemType, ResolveName(itemType));
         }
 
         protected virtual IEnumerable<XmlEnumItem> ResolveEnumItems(Type valueType)
@@ -133,10 +133,10 @@
             for (int i = 0; i < count; i++)
             {
                 var field = fields[i];
-                var name = this.GetEnumItemName(valueType, field.Name);
+                var name = GetEnumItemName(valueType, field.Name);
                 var value = Convert.ToInt64(field.GetRawConstantValue());
 
-                if (!this.ignoreSystemAttributes)
+                if (!ignoreSystemAttributes)
                 {
                     var xmlEnum = field
                         .GetCustomAttributes(typeof(XmlEnumAttribute), false)
@@ -159,10 +159,10 @@
         {
             var propertyBuilder = new XmlPropertyBuilder(propertyInfo)
             {
-                Name = this.ResolveName(propertyInfo.PropertyType, propertyInfo.Name)
+                Name = ResolveName(propertyInfo.PropertyType, propertyInfo.Name)
             };
 
-            if (!this.SetPropertyAttributes(propertyBuilder))
+            if (!SetPropertyAttributes(propertyBuilder))
             {
                 return null;
             }
@@ -177,7 +177,7 @@
 
         private bool SetPropertyAttributes(XmlPropertyBuilder propertyBuilder)
         {
-            if (this.ignoreSystemAttributes)
+            if (ignoreSystemAttributes)
             {
                 return true;
             }
@@ -191,7 +191,7 @@
 
             var propertyName = propertyBuilder.Name;
             var propertyType = propertyBuilder.PropertyInfo.PropertyType;
-            var item = this.ResolveItem(propertyType);
+            var item = ResolveItem(propertyType);
 
             if (attributes.Elements != null)
             {

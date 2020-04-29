@@ -2,8 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
-    using NetBike.Xml.Contracts;
-    using NetBike.Xml.Contracts.Builders;
+    using Contracts;
+    using Contracts.Builders;
     using NetBike.Xml.Converters;
     using NUnit.Framework;
 

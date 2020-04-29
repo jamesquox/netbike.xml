@@ -1,12 +1,15 @@
-﻿namespace NetBike.Xml.Tests
+﻿using System;
+using System.Text;
+
+namespace NetBike.Xml.Tests
 {
     using System.Collections.Generic;
     using System.Xml.Serialization;
-    using NetBike.Xml.Contracts;
-    using NetBike.Xml.Tests.Samples;
-    using NetBike.XmlUnit.NUnitAdapter;
+    using Contracts;
+    using Samples;
+    using XmlUnit.NUnitAdapter;
     using NUnit.Framework;
-    using XmlSerializer = NetBike.Xml.XmlSerializer;
+    using XmlSerializer = XmlSerializer;
 
     [TestFixture]
     public class XmlSerializerTests

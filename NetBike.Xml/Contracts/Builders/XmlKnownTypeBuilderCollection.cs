@@ -10,7 +10,7 @@
 
         public XmlKnownTypeBuilderCollection()
         {
-            this.items = new List<XmlKnownTypeBuilder>();
+            items = new List<XmlKnownTypeBuilder>();
         }
 
         public XmlKnownTypeBuilderCollection(IEnumerable<XmlKnownTypeBuilder> items)
@@ -25,13 +25,13 @@
 
         public int Count
         {
-            get { return this.items.Count; }
+            get { return items.Count; }
         }
 
         public void Add(Type valueType, XmlName name)
         {
             var builder = new XmlKnownTypeBuilder(valueType).SetName(name);
-            this.Add(builder);
+            Add(builder);
         }
 
         public void Add(XmlKnownTypeBuilder item)
@@ -41,14 +41,14 @@
                 throw new ArgumentNullException("item");
             }
 
-            var index = this.IndexOf(item.ValueType);
+            var index = IndexOf(item.ValueType);
 
             if (index == -1)
             {
                 throw new ArgumentException(string.Format("Known type \"{0}\" allready registered.", item.ValueType));
             }
 
-            this.Add(item);
+            Add(item);
         }
 
         public void Set(XmlKnownTypeBuilder item)
@@ -58,30 +58,30 @@
                 throw new ArgumentNullException("item");
             }
 
-            var index = this.IndexOf(item.ValueType);
+            var index = IndexOf(item.ValueType);
 
             if (index == -1)
             {
-                this.items.Add(item);
+                items.Add(item);
             }
             else
             {
-                this.items[index] = item;
+                items[index] = item;
             }
         }
 
         public bool Contains(Type valueType)
         {
-            return this.IndexOf(valueType) != -1;
+            return IndexOf(valueType) != -1;
         }
 
         public bool Remove(Type valueType)
         {
-            var index = this.IndexOf(valueType);
+            var index = IndexOf(valueType);
 
             if (index != -1)
             {
-                this.items.RemoveAt(index);
+                items.RemoveAt(index);
                 return true;
             }
 
@@ -90,17 +90,17 @@
 
         public IEnumerable<XmlKnownType> Build()
         {
-            return this.items.Select(x => x.Build());
+            return items.Select(x => x.Build());
         }
 
         public IEnumerator<XmlKnownTypeBuilder> GetEnumerator()
         {
-            return this.items.GetEnumerator();
+            return items.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.items.GetEnumerator();
+            return items.GetEnumerator();
         }
 
         internal static XmlKnownTypeBuilderCollection Create(IEnumerable<XmlKnownType> knownTypes)
@@ -116,9 +116,9 @@
 
         private int IndexOf(Type valueType)
         {
-            for (var i = 0; i < this.items.Count; i++)
+            for (var i = 0; i < items.Count; i++)
             {
-                if (this.items[i].ValueType == valueType)
+                if (items[i].ValueType == valueType)
                 {
                     return i;
                 }

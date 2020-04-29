@@ -1,7 +1,7 @@
 ﻿namespace NetBike.Xml.Converters
 {
     using System;
-    using NetBike.Xml.Contracts;
+    using Contracts;
 
     public interface IXmlConverterFactory
     {

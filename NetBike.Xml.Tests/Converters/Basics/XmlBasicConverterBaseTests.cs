@@ -1,9 +1,9 @@
 namespace NetBike.Xml.Tests.Converters.Basics
 {
     using System.Collections.Generic;
-    using NetBike.Xml.Contracts;
+    using Contracts;
     using NetBike.Xml.Converters;
-    using NetBike.XmlUnit.NUnitAdapter;
+    using XmlUnit.NUnitAdapter;
     using NUnit.Framework;
 
     public abstract class XmlBasicConverterBaseTests<TValue>

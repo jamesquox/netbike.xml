@@ -9,9 +9,9 @@
         public XmlPropertyBuilder(PropertyInfo propertyInfo)
             : base(propertyInfo.PropertyType)
         {
-            this.PropertyInfo = propertyInfo;
-            this.MappingType = XmlMappingType.Element;
-            this.Order = -1;
+            PropertyInfo = propertyInfo;
+            MappingType = XmlMappingType.Element;
+            Order = -1;
         }
 
         public PropertyInfo PropertyInfo { get; private set; }
@@ -70,18 +70,18 @@
         public new XmlProperty Build()
         {
             return new XmlProperty(
-                this.PropertyInfo,
-                this.Name ?? this.PropertyInfo.Name,
-                this.MappingType,
-                this.IsRequired,
-                this.TypeHandling,
-                this.NullValueHandling,
-                this.DefaultValueHandling,
-                this.DefaultValue,
-                this.Item != null ? this.Item.Build() : null,
-                this.KnownTypes != null ? this.KnownTypes.Build() : null,
-                this.IsCollection,
-                this.Order);
+                PropertyInfo,
+                Name ?? PropertyInfo.Name,
+                MappingType,
+                IsRequired,
+                TypeHandling,
+                NullValueHandling,
+                DefaultValueHandling,
+                DefaultValue,
+                Item != null ? Item.Build() : null,
+                KnownTypes != null ? KnownTypes.Build() : null,
+                IsCollection,
+                Order);
         }
 
         internal static PropertyInfo GetPropertyInfo(Type ownerType, string propertyName)

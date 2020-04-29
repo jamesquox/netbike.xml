@@ -34,16 +34,16 @@
         public XmlObjectContract Build()
         {
             return new XmlObjectContract(
-                this.ValueType,
-                this.Name ?? this.ValueType.GetShortName(),
-                this.Properties != null ? this.Properties.Build() : null,
-                this.TypeHandling,
-                this.Item != null ? this.Item.Build() : null);
+                ValueType,
+                Name ?? ValueType.GetShortName(),
+                Properties != null ? Properties.Build() : null,
+                TypeHandling,
+                Item != null ? Item.Build() : null);
         }
 
         public override XmlContract BuildContract()
         {
-            return this.Build();
+            return Build();
         }
     }
 }

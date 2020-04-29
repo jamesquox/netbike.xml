@@ -4,7 +4,7 @@
     using System.IO;
     using System.Text;
     using System.Xml;
-    using NetBike.Xml.Contracts;
+    using Contracts;
     using NetBike.Xml.Converters;
     using NUnit.Framework;
 

@@ -2,13 +2,13 @@
 {
     using System.Collections.Generic;
     using System.Xml.Serialization;
-    using NetBike.Xml.Contracts;
-    using NetBike.Xml.Contracts.Builders;
+    using Contracts;
+    using Contracts.Builders;
     using NetBike.Xml.Converters;
     using NetBike.Xml.Converters.Objects;
-    using NetBike.Xml.Tests.Samples;
-    using NetBike.XmlUnit;
-    using NetBike.XmlUnit.NUnitAdapter;
+    using Samples;
+    using XmlUnit;
+    using XmlUnit.NUnitAdapter;
     using NUnit.Framework;
 
     [TestFixture]

@@ -2,8 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
-    using NetBike.Xml.Contracts.Builders;
-    using NetBike.Xml.Utilities;
+    using Builders;
+    using Utilities;
 
     public sealed partial class XmlObjectContract : XmlContract
     {
@@ -48,7 +48,7 @@
 
                 if (property.IsRequired || property.DefaultValue != null)
                 {
-                    this.hasRequiredOrDefaultsProperties = true;
+                    hasRequiredOrDefaultsProperties = true;
                 }
 
                 if (property.MappingType == XmlMappingType.Element)
@@ -57,16 +57,16 @@
                 }
                 else if (property.MappingType == XmlMappingType.InnerText)
                 {
-                    if (this.innerTextProperty != null)
+                    if (innerTextProperty != null)
                     {
                         throw new XmlSerializationException("Contract must have only one innerText property.");
                     }
 
-                    this.innerTextProperty = property;
+                    innerTextProperty = property;
                 }
             }
 
-            if (this.innerTextProperty != null && elementCount > 0)
+            if (innerTextProperty != null && elementCount > 0)
             {
                 throw new XmlSerializationException("Contract must not contain elements, if it contains innerText property.");
             }
@@ -76,40 +76,40 @@
 
         public IReadOnlyList<XmlProperty> Properties
         {
-            get { return this.properties; }
+            get { return properties; }
         }
 
         public XmlItem Item
         {
-            get { return this.item; }
+            get { return item; }
         }
 
         public XmlTypeHandling? TypeHandling
         {
-            get { return this.typeHandling; }
+            get { return typeHandling; }
         }
 
         internal bool HasRequiredOrDefaultsProperties
         {
-            get { return this.hasRequiredOrDefaultsProperties; }
+            get { return hasRequiredOrDefaultsProperties; }
         }
 
         internal XmlProperty InnerTextProperty
         {
-            get { return this.innerTextProperty; }
+            get { return innerTextProperty; }
         }
         
         protected override XmlMember GetDefaultMember()
         {
             return new XmlMember(
-                this.ValueType,
-                this.Name,
+                ValueType,
+                Name,
                 XmlMappingType.Element,
-                this.typeHandling,
+                typeHandling,
                 null,
                 null,
                 null,
-                this.item);
+                item);
         }
     }
 }

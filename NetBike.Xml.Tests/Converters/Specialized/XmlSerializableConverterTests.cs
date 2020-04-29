@@ -9,7 +9,7 @@
     using System.Xml.Schema;
     using System.Xml.Serialization;
     using NetBike.Xml.Converters.Specialized;
-    using NetBike.XmlUnit.NUnitAdapter;
+    using XmlUnit.NUnitAdapter;
     using NUnit.Framework;
 
     [TestFixture]

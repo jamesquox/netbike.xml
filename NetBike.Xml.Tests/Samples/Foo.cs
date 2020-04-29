@@ -7,6 +7,7 @@
         public int Id { get; set; }
 
         public string Name { get; set; }
+        public FooReference Reference { get; set; }
         public FooEnum? EnumValue { get; set; }
 
         public override bool Equals(object obj)

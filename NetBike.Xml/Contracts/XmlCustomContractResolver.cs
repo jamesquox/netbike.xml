@@ -31,7 +31,7 @@
 
         public IEnumerable<XmlContract> Contracts
         {
-            get { return this.contracts.Values; }
+            get { return contracts.Values; }
         }
 
         public XmlContract ResolveContract(Type valueType)
@@ -43,14 +43,14 @@
 
             XmlContract contract;
 
-            if (!this.contracts.TryGetValue(valueType, out contract))
+            if (!contracts.TryGetValue(valueType, out contract))
             {
-                if (this.fallbackResolver == null)
+                if (fallbackResolver == null)
                 {
                     throw new XmlSerializationException(string.Format("Can't resolve contract for \"{0}\".", valueType));
                 }
 
-                contract = this.fallbackResolver.ResolveContract(valueType);
+                contract = fallbackResolver.ResolveContract(valueType);
             }
 
             return contract;

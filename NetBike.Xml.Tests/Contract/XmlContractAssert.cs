@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using NetBike.Xml.Contracts;
+    using Contracts;
     using NUnit.Framework;
 
     internal static class XmlContractAssert

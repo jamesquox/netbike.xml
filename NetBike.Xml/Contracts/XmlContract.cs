@@ -1,7 +1,7 @@
 ﻿namespace NetBike.Xml.Contracts
 {
     using System;
-    using NetBike.Xml.Utilities;
+    using Utilities;
 
     public class XmlContract
     {
@@ -28,42 +28,42 @@
 
         public Type ValueType
         {
-            get { return this.valueType; }
+            get { return valueType; }
         }
 
         public XmlName Name
         {
-            get { return this.name; }
+            get { return name; }
         }
 
         internal XmlMember Root
         {
             get
             {
-                if (this.root == null)
+                if (root == null)
                 {
-                    this.root = this.GetDefaultMember();
+                    root = GetDefaultMember();
                 }
 
-                return this.root;
+                return root;
             }
         }
 
         internal object CreateDefault()
         {
-            if (this.creator == null)
+            if (creator == null)
             {
-                this.creator = DynamicWrapperFactory.CreateConstructor(this.valueType);
+                creator = DynamicWrapperFactory.CreateConstructor(valueType);
             }
 
-            return this.creator();
+            return creator();
         }
 
         protected virtual XmlMember GetDefaultMember()
         {
             return new XmlMember(
-                this.valueType,
-                this.name,
+                valueType,
+                name,
                 XmlMappingType.Element,
                 XmlTypeHandling.None,
                 XmlNullValueHandling.Include,

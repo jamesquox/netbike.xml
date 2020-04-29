@@ -1,8 +1,8 @@
 ﻿namespace NetBike.Xml.Converters.Objects
 {
     using System.Xml;
-    using NetBike.Xml.Contracts;
-    using NetBike.Xml.Converters.Collections;
+    using Contracts;
+    using Collections;
 
     internal struct XmlPropertyInfo
     {
@@ -51,20 +51,20 @@
 
         public XmlMember Match(XmlMappingType mappingType, XmlReader reader)
         {
-            if (mappingType == this.Property.MappingType)
+            if (mappingType == Property.MappingType)
             {
-                if (this.NameRef.Match(reader))
+                if (NameRef.Match(reader))
                 {
-                    return this.Property;
+                    return Property;
                 }
 
-                if (this.KnownNameRefs != null)
+                if (KnownNameRefs != null)
                 {
-                    for (var i = 0; i < this.KnownNameRefs.Length; i++)
+                    for (var i = 0; i < KnownNameRefs.Length; i++)
                     {
-                        if (this.KnownNameRefs[i].Match(reader))
+                        if (KnownNameRefs[i].Match(reader))
                         {
-                            return (this.Item ?? this.Property).KnownTypes[i];
+                            return (Item ?? Property).KnownTypes[i];
                         }
                     }
                 }

@@ -1,7 +1,7 @@
 ﻿namespace NetBike.Xml.Converters.Basics
 {
     using System;
-    using NetBike.Xml.Utilities;
+    using Utilities;
 
     public sealed class XmlDateTimeConverter : XmlBasicRawConverter<DateTime>
     {

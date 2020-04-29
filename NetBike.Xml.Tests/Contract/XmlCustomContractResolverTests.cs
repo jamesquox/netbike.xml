@@ -1,7 +1,7 @@
 ﻿namespace NetBike.Xml.Tests.Contract
 {
-    using NetBike.Xml.Contracts;
-    using NetBike.Xml.Tests.Samples;
+    using Contracts;
+    using Samples;
     using NUnit.Framework;
 
     [TestFixture]

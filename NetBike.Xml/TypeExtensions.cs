@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using NetBike.Xml.Utilities;
+    using Utilities;
 
     internal static class TypeExtensions
     {

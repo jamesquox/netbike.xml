@@ -11,7 +11,7 @@
                 throw new ArgumentNullException("valueType");
             }
 
-            this.ValueType = valueType;
+            ValueType = valueType;
         }
 
         public Type ValueType { get; private set; }

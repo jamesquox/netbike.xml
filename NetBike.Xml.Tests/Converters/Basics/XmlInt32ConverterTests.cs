@@ -1,7 +1,7 @@
 ﻿namespace NetBike.Xml.Tests.Converters.Basics
 {
     using System.Collections.Generic;
-    using NetBike.Xml.Contracts;
+    using Contracts;
     using NetBike.Xml.Converters;
     using NetBike.Xml.Converters.Basics;
     using NUnit.Framework;

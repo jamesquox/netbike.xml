@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NetBike.Xml</name>
+    </assembly>
+    <members>
+        <member name="T:NetBike.Xml.Utilities.ObjectIdGenerator">
+            <summary>
+            Attribution: https://msdn.microsoft.com/en-us/library/system.runtime.serialization.objectmanager(v=vs.110).aspx
+            </summary>
+        </member>
+        <member name="M:NetBike.Xml.Utilities.ObjectIdGenerator.#ctor">
+            <summary>Initializes a new instance of the <see cref="T:System.Runtime.Serialization.ObjectIDGenerator" /> class.</summary>
+        </member>
+        <member name="M:NetBike.Xml.Utilities.ObjectIdGenerator.For(System.Object)">
+            <summary>Returns the ID for the specified object, generating a new ID if the specified object has not already been identified by the <see cref="T:System.Runtime.Serialization.ObjectIDGenerator" />.</summary>
+            <returns>The object's identity context, which can be used for serialization. FirstEncounter is set to true if this is the first time the object has been identified; otherwise, it is set to false.</returns>
+            <param name="obj">The object you want an ID for. </param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="obj" /> parameter is null. </exception>
+        </member>
+        <member name="T:NetBike.Xml.Utilities.RfcDateTime">
+            <summary>
+            Implementation of RFC3339
+            http://tools.ietf.org/html/rfc3339
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -5,5 +5,7 @@
         int Id { get; set; }
 
         string Name { get; set; }
+
+        FooReference Reference { get; set; }
     }
 }

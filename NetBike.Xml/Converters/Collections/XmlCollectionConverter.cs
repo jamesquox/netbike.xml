@@ -4,7 +4,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Xml;
-    using NetBike.Xml.Contracts;
+    using Contracts;
 
     public abstract class XmlCollectionConverter : IXmlConverter
     {
@@ -59,7 +59,20 @@
                         context.WriteTypeName(writer, lastItemType);
                     }
 
-                    context.WriteXml(writer, item, member, typeContext);
+                    var id = context.Settings.ReferenceHandlingGenerator.GetId(item, out bool firstTime);
+                    if (firstTime)
+                    {
+                        writer.WriteAttributeString(context.Settings.ReferenceHandlingIdName, id.ToString());
+                        context.WriteXml(writer, item, member, typeContext);
+                    }
+                    else
+                    {
+                        if (context.Settings.ReferenceHandling == XmlReferenceHandling.Throw)
+                        {
+                            throw new Exception("Found reference loop. Please set ReferenceHandling setting to XmlReferenceHandling.Handle");
+                        }
+                        writer.WriteAttributeString(context.Settings.ReferenceHandlingReferenceName, id.ToString());
+                    }
 
                     writer.WriteEndElement();
                 }
@@ -80,7 +93,7 @@
                 throw new XmlSerializationException(string.Format("XML contract of \"{0}\" must contains item info", context.ValueType));
             }
 
-            var collectionProxy = this.CreateProxy(context.ValueType);
+            var collectionProxy = CreateProxy(context.ValueType);
 
             if (!reader.IsEmptyElement)
             {

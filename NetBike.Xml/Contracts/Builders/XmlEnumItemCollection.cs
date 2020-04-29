@@ -9,7 +9,7 @@
 
         public XmlEnumItemCollection()
         {
-            this.items = new List<XmlEnumItem>();
+            items = new List<XmlEnumItem>();
         }
 
         public XmlEnumItemCollection(IEnumerable<XmlEnumItem> items)
@@ -24,13 +24,13 @@
 
         public int Count
         {
-            get { return this.items.Count; }
+            get { return items.Count; }
         }
 
         public void Add(long value, string name)
         {
             var item = new XmlEnumItem(value, name);
-            this.Add(item);
+            Add(item);
         }
 
         public void Add(XmlEnumItem item)
@@ -40,14 +40,14 @@
                 throw new ArgumentNullException("item");
             }
 
-            var index = this.IndexOf(item.Value);
+            var index = IndexOf(item.Value);
 
             if (index != -1)
             {
                 throw new ArgumentException(string.Format("Enum item \"{0}\" allready registered.", item.Value), "item");
             }
 
-            this.items.Add(item);
+            items.Add(item);
         }
 
         public void Set(XmlEnumItem item)
@@ -57,30 +57,30 @@
                 throw new ArgumentNullException("item");
             }
 
-            var index = this.IndexOf(item.Value);
+            var index = IndexOf(item.Value);
 
             if (index == -1)
             {
-                this.items.Add(item);
+                items.Add(item);
             }
             else
             {
-                this.items[index] = item;
+                items[index] = item;
             }
         }
 
         public bool Contains(long value)
         {
-            return this.IndexOf(value) != -1;
+            return IndexOf(value) != -1;
         }
 
         public bool Remove(long value)
         {
-            var index = this.IndexOf(value);
+            var index = IndexOf(value);
 
             if (index != -1)
             {
-                this.items.RemoveAt(index);
+                items.RemoveAt(index);
                 return true;
             }
 
@@ -89,19 +89,19 @@
 
         public IEnumerator<XmlEnumItem> GetEnumerator()
         {
-            return this.items.GetEnumerator();
+            return items.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.items.GetEnumerator();
+            return items.GetEnumerator();
         }
 
         private int IndexOf(long value)
         {
-            for (var i = 0; i < this.items.Count; i++)
+            for (var i = 0; i < items.Count; i++)
             {
-                if (this.items[i].Value == value)
+                if (items[i].Value == value)
                 {
                     return i;
                 }

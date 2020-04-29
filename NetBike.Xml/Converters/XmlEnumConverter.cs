@@ -3,7 +3,7 @@
     using System;
     using System.Text;
     using System.Xml;
-    using NetBike.Xml.Contracts;
+    using Contracts;
 
     public sealed class XmlEnumConverter : IXmlConverter
     {
@@ -54,7 +54,7 @@
                     {
                         if (builder.Length != 0)
                         {
-                            builder.Append(this.separator);
+                            builder.Append(separator);
                         }
 
                         builder.Append(item.Name);
@@ -89,7 +89,7 @@
             }
             else
             {
-                var names = valueString.Split(new char[] { this.separator }, StringSplitOptions.RemoveEmptyEntries);
+                var names = valueString.Split(new char[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var name in names)
                 {

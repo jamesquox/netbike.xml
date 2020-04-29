@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using NetBike.Xml.Utilities;
+    using Utilities;
 
     public sealed class XmlListConverter : XmlConverterFactory
     {
@@ -34,12 +34,12 @@
 
                 public void Add(object value)
                 {
-                    this.items.Add((TItem)value);
+                    items.Add((TItem)value);
                 }
 
                 public object GetResult()
                 {
-                    return this.items;
+                    return items;
                 }
             }
         }

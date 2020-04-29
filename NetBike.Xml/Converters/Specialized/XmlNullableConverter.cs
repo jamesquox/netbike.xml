@@ -2,7 +2,7 @@
 {
     using System;
     using System.Xml;
-    using NetBike.Xml.Contracts;
+    using Contracts;
 
     public sealed class XmlNullableConverter : IXmlConverter
     {

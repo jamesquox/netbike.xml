@@ -29,10 +29,10 @@
         public XmlItem Build()
         {
             return new XmlItem(
-                this.ValueType,
-                this.Name ?? this.ValueType.GetShortName(),
-                this.TypeHandling,
-                this.KnownTypes != null ? this.KnownTypes.Build() : null);
+                ValueType,
+                Name ?? ValueType.GetShortName(),
+                TypeHandling,
+                KnownTypes != null ? KnownTypes.Build() : null);
         }
     }
 }

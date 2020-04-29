@@ -14,7 +14,7 @@
 
         public string Format
         {
-            get { return this.format; }
+            get { return format; }
         }
 
         protected override Guid Parse(string value, XmlSerializationContext context)
@@ -24,7 +24,7 @@
 
         protected override string ToString(Guid value, XmlSerializationContext context)
         {
-            return value.ToString(this.format);
+            return value.ToString(format);
         }
     }
 }

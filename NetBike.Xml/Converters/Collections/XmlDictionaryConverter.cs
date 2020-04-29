@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using NetBike.Xml.Utilities;
+    using Utilities;
 
     public sealed class XmlDictionaryConverter : XmlConverterFactory
     {
@@ -35,12 +35,12 @@
                 public void Add(object value)
                 {
                     var keyValuePair = (KeyValuePair<TKey, TValue>)value;
-                    this.dictionary.Add(keyValuePair.Key, keyValuePair.Value);
+                    dictionary.Add(keyValuePair.Key, keyValuePair.Value);
                 }
 
                 public object GetResult()
                 {
-                    return this.dictionary;
+                    return dictionary;
                 }
             }
         }

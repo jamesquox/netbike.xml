@@ -33,12 +33,12 @@
 
         public string Prefix
         {
-            get { return this.prefix; }
+            get { return prefix; }
         }
 
         public string NamespaceUri
         {
-            get { return this.namespaceUri; }
+            get { return namespaceUri; }
         }
 
         internal static void VerifyNamespaceUri(string namespaceUri)

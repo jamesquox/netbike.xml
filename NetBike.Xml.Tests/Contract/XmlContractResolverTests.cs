@@ -3,8 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Xml.Serialization;
-    using NetBike.Xml.Contracts;
-    using NetBike.Xml.Contracts.Builders;
+    using Contracts;
+    using Contracts.Builders;
     using NUnit.Framework;
 
     [TestFixture]

@@ -36,7 +36,7 @@
                 }
                 else
                 {
-                    actualType = this.ResolveTypeName(typeName);
+                    actualType = ResolveTypeName(typeName);
 
                     if (rootType != null && !rootType.IsAssignableFrom(actualType))
                     {
@@ -61,9 +61,9 @@
 
             Type type = null;
 
-            if (this.AssemblyResolver != null || this.TypeResolver != null)
+            if (AssemblyResolver != null || TypeResolver != null)
             {
-                type = Type.GetType(typeName, this.AssemblyResolver, this.TypeResolver);
+                type = Type.GetType(typeName, AssemblyResolver, TypeResolver);
             }
             else if (typeName.IndexOf(',') > 0)
             {

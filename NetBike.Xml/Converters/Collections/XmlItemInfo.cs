@@ -1,7 +1,7 @@
 ﻿namespace NetBike.Xml.Converters.Collections
 {
     using System.Xml;
-    using NetBike.Xml.Contracts;
+    using Contracts;
 
     internal struct XmlItemInfo
     {
@@ -11,25 +11,25 @@
 
         public XmlItemInfo(XmlItem item, XmlNameTable nameTable)
         {
-            this.Item = item;
-            this.NameRef = new XmlNameRef(item.Name, nameTable);
-            this.KnownNameRefs = GetKnownNameRefs(item, nameTable);
+            Item = item;
+            NameRef = new XmlNameRef(item.Name, nameTable);
+            KnownNameRefs = GetKnownNameRefs(item, nameTable);
         }
 
         public XmlMember Match(XmlReader reader)
         {
-            if (this.NameRef.Match(reader))
+            if (NameRef.Match(reader))
             {
-                return this.Item;
+                return Item;
             }
 
-            if (this.KnownNameRefs != null)
+            if (KnownNameRefs != null)
             {
-                for (int i = 0; i < this.KnownNameRefs.Length; i++)
+                for (int i = 0; i < KnownNameRefs.Length; i++)
                 {
-                    if (this.KnownNameRefs[i].Match(reader))
+                    if (KnownNameRefs[i].Match(reader))
                     {
-                        return this.Item.KnownTypes[i];
+                        return Item.KnownTypes[i];
                     }
                 }
             }

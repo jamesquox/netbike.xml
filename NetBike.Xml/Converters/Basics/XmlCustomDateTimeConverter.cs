@@ -13,17 +13,17 @@
 
         public string Format
         {
-            get { return this.format; }
+            get { return format; }
         }
 
         protected override DateTime Parse(string value, XmlSerializationContext context)
         {
-            return DateTime.ParseExact(value, this.format, context.Settings.Culture);
+            return DateTime.ParseExact(value, format, context.Settings.Culture);
         }
 
         protected override string ToString(DateTime value, XmlSerializationContext context)
         {
-            return value.ToString(this.format, context.Settings.Culture);
+            return value.ToString(format, context.Settings.Culture);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace NetBike.Xml.Tests.Contract
 {
-    using NetBike.Xml.Contracts;
+    using Contracts;
 
     public static class XmlContractResolverExtensions
     {

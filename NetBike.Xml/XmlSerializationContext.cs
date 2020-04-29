@@ -1,10 +1,13 @@
-﻿namespace NetBike.Xml
+﻿using System.Collections;
+using System.Linq;
+
+namespace NetBike.Xml
 {
     using System;
     using System.Collections.Generic;
     using System.Xml;
-    using NetBike.Xml.Contracts;
-    using NetBike.Xml.Converters;
+    using Contracts;
+    using Converters;
 
     public sealed class XmlSerializationContext
     {
@@ -25,7 +28,7 @@
             }
 
             this.settings = settings;
-            this.initialState = true;
+            initialState = true;
         }
 
         internal XmlSerializationContext(XmlSerializerSettings settings, XmlMember member, XmlContract contract)
@@ -41,47 +44,47 @@
                 throw new ArgumentNullException("member");
             }
 
-            this.currentContract = contract;
-            this.currentMember = member;
-            this.initialState = false;
+            currentContract = contract;
+            currentMember = member;
+            initialState = false;
         }
 
         public Type ValueType
         {
-            get { return this.currentContract.ValueType; }
+            get { return currentContract.ValueType; }
         }
 
         public XmlContract Contract
         {
-            get { return this.currentContract; }
+            get { return currentContract; }
         }
 
         public XmlMember Member
         {
-            get { return this.currentMember; }
+            get { return currentMember; }
         }
 
         public IDictionary<string, object> Properties
         {
             get
             {
-                if (this.properties == null)
+                if (properties == null)
                 {
-                    this.properties = new Dictionary<string, object>();
+                    properties = new Dictionary<string, object>();
                 }
 
-                return this.properties;
+                return properties;
             }
         }
 
         public XmlSerializerSettings Settings
         {
-            get { return this.settings; }
+            get { return settings; }
         }
 
         public XmlContract GetTypeContract(Type valueType)
         {
-            return this.settings.GetTypeContext(valueType).Contract;
+            return settings.GetTypeContext(valueType).Contract;
         }
 
         public void Serialize(XmlWriter writer, object value, Type valueType)
@@ -91,7 +94,7 @@
                 throw new ArgumentNullException("valueType");
             }
 
-            this.Serialize(writer, value, valueType, null);
+            Serialize(writer, value, valueType, null);
         }
 
         public void Serialize(XmlWriter writer, object value, XmlMember member)
@@ -101,17 +104,17 @@
                 throw new ArgumentNullException("memberInfo");
             }
 
-            this.Serialize(writer, value, member.ValueType, member);
+            Serialize(writer, value, member.ValueType, member);
         }
 
         public object Deserialize(XmlReader reader, Type valueType)
         {
-            return this.Deserialize(reader, valueType, null);
+            return Deserialize(reader, valueType, null);
         }
 
         public object Deserialize(XmlReader reader, XmlMember member)
         {
-            return this.Deserialize(reader, member.ValueType, member);
+            return Deserialize(reader, member.ValueType, member);
         }
 
         public void SerializeBody(XmlWriter writer, object value, Type valueType)
@@ -121,7 +124,7 @@
                 throw new ArgumentNullException("valueType");
             }
 
-            this.SerializeBody(writer, value, valueType, null);
+            SerializeBody(writer, value, valueType, null);
         }
 
         public void SerializeBody(XmlWriter writer, object value, XmlMember member)
@@ -131,18 +134,18 @@
                 throw new ArgumentNullException("member");
             }
 
-            this.SerializeBody(writer, value, member.ValueType, member);
+            SerializeBody(writer, value, member.ValueType, member);
         }
 
         internal void WriteTypeName(XmlWriter writer, Type valueType)
         {
-            var typeName = this.settings.TypeResolver.GetTypeName(valueType);
-            writer.WriteAttributeString(this.settings.TypeAttributeName, typeName);
+            var typeName = settings.TypeResolver.GetTypeName(valueType);
+            writer.WriteAttributeString(settings.TypeAttributeName, typeName);
         }
 
         internal void WriteNull(XmlWriter writer, Type valueType, XmlMember member)
         {
-            var nullValueHandling = this.settings.NullValueHandling;
+            var nullValueHandling = settings.NullValueHandling;
 
             if (member != null)
             {
@@ -158,44 +161,44 @@
             {
                 if (member == null)
                 {
-                    member = this.settings.GetTypeContext(valueType).Contract.Root;
+                    member = settings.GetTypeContext(valueType).Contract.Root;
                 }
 
                 writer.WriteStartElement(member.Name);
 
-                if (this.initialState)
+                if (initialState)
                 {
-                    this.initialState = false;
-                    this.WriteNamespaces(writer);
+                    initialState = false;
+                    WriteNamespaces(writer);
                 }
 
-                writer.WriteAttributeString(this.settings.NullAttributeName, "true");
+                writer.WriteAttributeString(settings.NullAttributeName, "true");
                 writer.WriteEndElement();
             }
         }
-        
+
         internal bool ReadValueType(XmlReader reader, ref Type valueType)
         {
             if (reader.AttributeCount > 0)
             {
-                if (!object.ReferenceEquals(this.lastUsedReader, reader))
+                if (!ReferenceEquals(lastUsedReader, reader))
                 {
-                    this.typeNameRef.Reset(this.settings.TypeAttributeName, reader.NameTable);
-                    this.nullNameRef.Reset(this.settings.NullAttributeName, reader.NameTable);
-                    this.lastUsedReader = reader;
+                    typeNameRef.Reset(settings.TypeAttributeName, reader.NameTable);
+                    nullNameRef.Reset(settings.NullAttributeName, reader.NameTable);
+                    lastUsedReader = reader;
                 }
 
                 if (reader.MoveToFirstAttribute())
                 {
                     do
                     {
-                        if (this.nullNameRef.Match(reader))
+                        if (nullNameRef.Match(reader))
                         {
                             return false;
                         }
-                        else if (this.typeNameRef.Match(reader))
+                        else if (typeNameRef.Match(reader))
                         {
-                            valueType = this.settings.TypeResolver.ResolveTypeName(valueType, reader.Value);
+                            valueType = settings.TypeResolver.ResolveTypeName(valueType, reader.Value);
                         }
                     }
                     while (reader.MoveToNextAttribute());
@@ -211,7 +214,7 @@
         {
             if (member.IsOpenType)
             {
-                var typeHandling = member.TypeHandling ?? this.settings.TypeHandling;
+                var typeHandling = member.TypeHandling ?? settings.TypeHandling;
 
                 if (typeHandling != XmlTypeHandling.None)
                 {
@@ -228,30 +231,30 @@
 
         internal void WriteXml(XmlWriter writer, object value, XmlMember member, XmlTypeContext typeContext)
         {
-            var lastMember = this.currentMember;
-            var lastContract = this.currentContract;
+            var lastMember = currentMember;
+            var lastContract = currentContract;
 
-            this.currentMember = member;
-            this.currentContract = typeContext.Contract;
+            currentMember = member;
+            currentContract = typeContext.Contract;
 
             typeContext.WriteXml(writer, value, this);
 
-            this.currentMember = lastMember;
-            this.currentContract = lastContract;
+            currentMember = lastMember;
+            currentContract = lastContract;
         }
 
         internal object ReadXml(XmlReader reader, XmlMember member, XmlTypeContext typeContext)
         {
-            var lastMember = this.currentMember;
-            var lastContract = this.currentContract;
+            var lastMember = currentMember;
+            var lastContract = currentContract;
 
-            this.currentMember = member;
-            this.currentContract = typeContext.Contract;
+            currentMember = member;
+            currentContract = typeContext.Contract;
 
             var value = typeContext.ReadXml(reader, this);
 
-            this.currentMember = lastMember;
-            this.currentContract = lastContract;
+            currentMember = lastMember;
+            currentContract = lastContract;
 
             return value;
         }
@@ -265,12 +268,12 @@
 
             if (value == null)
             {
-                this.WriteNull(writer, memberType, member);
+                WriteNull(writer, memberType, member);
             }
             else
             {
-                var typeContext = this.settings.GetTypeContext(memberType);
-                this.WriteXml(writer, value, member ?? typeContext.Contract.Root, typeContext);
+                var typeContext = settings.GetTypeContext(memberType);
+                WriteXml(writer, value, member ?? typeContext.Contract.Root, typeContext);
             }
         }
 
@@ -283,7 +286,12 @@
 
             if (value == null)
             {
-                this.WriteNull(writer, memberType, member);
+                WriteNull(writer, memberType, member);
+                return;
+            }
+
+            if (settings.EmptyCollectionHandling == XmlEmptyCollectionHandling.Ignore && value.IsEmpty() == true)
+            {
                 return;
             }
 
@@ -292,15 +300,15 @@
 
             if (member == null)
             {
-                context = this.settings.GetTypeContext(memberType);
+                context = settings.GetTypeContext(memberType);
                 member = context.Contract.Root;
             }
 
-            var shouldWriteTypeName = this.TryResolveValueType(value, ref member, out valueType);
+            var shouldWriteTypeName = TryResolveValueType(value, ref member, out valueType);
 
             if (member.DefaultValue != null)
             {
-                var defaultValueHandling = member.DefaultValueHandling ?? this.settings.DefaultValueHandling;
+                var defaultValueHandling = member.DefaultValueHandling ?? settings.DefaultValueHandling;
 
                 if (defaultValueHandling == XmlDefaultValueHandling.Ignore && value.Equals(member.DefaultValue))
                 {
@@ -310,7 +318,7 @@
 
             if (context == null || context.Contract.ValueType != member.ValueType)
             {
-                context = this.settings.GetTypeContext(valueType);
+                context = settings.GetTypeContext(valueType);
             }
 
             switch (member.MappingType)
@@ -318,33 +326,57 @@
                 case XmlMappingType.Element:
                     writer.WriteStartElement(member.Name);
 
-                    if (this.initialState)
+
+                    if (initialState)
                     {
-                        this.initialState = false;
-                        this.WriteNamespaces(writer);
+                        initialState = false;
+                        WriteNamespaces(writer);
                     }
 
                     if (shouldWriteTypeName)
                     {
-                        this.WriteTypeName(writer, valueType);
+                        WriteTypeName(writer, valueType);
                     }
 
-                    this.WriteXml(writer, value, member, context);
+                    if (context.Contract is XmlObjectContract && !_objectIgnoreTypes.Contains(context.Contract.Name.LocalName))
+                    {
+                        var id = settings.ReferenceHandlingGenerator.GetId(value, out bool firstTime);
+                        if (firstTime)
+                        {
+                            writer.WriteAttributeString(Settings.ReferenceHandlingIdName, id.ToString());
+                            WriteXml(writer, value, member, context);
+                        }
+                        else
+                        {
+                            if (Settings.ReferenceHandling == XmlReferenceHandling.Throw)
+                            {
+                                throw new Exception("Found reference loop. Please set ReferenceHandling setting to XmlReferenceHandling.Handle");
+                            }
+                            writer.WriteAttributeString(Settings.ReferenceHandlingReferenceName, id.ToString());
+                        }
+                    }
+                    else
+                    {
+                        WriteXml(writer, value, member, context);
+                    }
+
                     writer.WriteEndElement();
                     break;
 
                 case XmlMappingType.Attribute:
                     writer.WriteStartAttribute(member.Name);
-                    this.WriteXml(writer, value, member, context);
+                    WriteXml(writer, value, member, context);
                     writer.WriteEndAttribute();
                     break;
 
                 case XmlMappingType.InnerText:
-                    this.WriteXml(writer, value, member, context);
+                    WriteXml(writer, value, member, context);
                     break;
             }
         }
-                
+
+        private static string[] _objectIgnoreTypes = {"List", "Nullable", "ArrayOfByte" };
+
         private object Deserialize(XmlReader reader, Type valueType, XmlMember member)
         {
             if (reader == null)
@@ -357,9 +389,9 @@
                 throw new ArgumentNullException("valueType");
             }
 
-            if (this.initialState && reader.NodeType == XmlNodeType.None)
+            if (initialState && reader.NodeType == XmlNodeType.None)
             {
-                this.initialState = false;
+                initialState = false;
 
                 while (reader.NodeType != XmlNodeType.Element)
                 {
@@ -372,26 +404,26 @@
 
             if (reader.NodeType == XmlNodeType.Element)
             {
-                if (!this.ReadValueType(reader, ref valueType))
+                if (!ReadValueType(reader, ref valueType))
                 {
                     reader.Skip();
                     return null;
                 }
             }
 
-            var typeInfo = this.settings.GetTypeContext(valueType);
+            var typeInfo = settings.GetTypeContext(valueType);
 
             if (member == null)
             {
                 member = typeInfo.Contract.Root;
             }
 
-            return this.ReadXml(reader, member, typeInfo);
+            return ReadXml(reader, member, typeInfo);
         }
 
         private void WriteNamespaces(XmlWriter writer)
         {
-            foreach (var item in this.settings.Namespaces)
+            foreach (var item in settings.Namespaces)
             {
                 writer.WriteNamespace(item);
             }

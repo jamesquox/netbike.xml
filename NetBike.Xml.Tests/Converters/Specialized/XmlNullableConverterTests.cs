@@ -2,11 +2,11 @@
 {
     using System;
     using System.Xml.Serialization;
-    using NetBike.Xml.Contracts;
+    using Contracts;
     using NetBike.Xml.Converters.Specialized;
-    using NetBike.XmlUnit.NUnitAdapter;
+    using XmlUnit.NUnitAdapter;
     using NUnit.Framework;
-    using XmlSerializer = NetBike.Xml.XmlSerializer;
+    using XmlSerializer = XmlSerializer;
 
     [TestFixture]
     public class XmlNullableConverterTests

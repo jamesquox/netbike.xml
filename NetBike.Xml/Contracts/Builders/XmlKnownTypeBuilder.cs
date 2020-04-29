@@ -35,12 +35,12 @@
         public XmlKnownType Build()
         {
             return new XmlKnownType(
-                this.ValueType,
-                this.Name ?? this.ValueType.GetShortName(),
-                this.TypeHandling,
-                this.NullValueHandling,
-                this.DefaultValueHandling,
-                this.DefaultValue);
+                ValueType,
+                Name ?? ValueType.GetShortName(),
+                TypeHandling,
+                NullValueHandling,
+                DefaultValueHandling,
+                DefaultValue);
         }
     }
 }

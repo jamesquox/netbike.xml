@@ -30,12 +30,12 @@
 
         public string Name
         {
-            get { return this.name; }
+            get { return name; }
         }
 
         public long Value
         {
-            get { return this.value; }
+            get { return value; }
         }
     }
 }

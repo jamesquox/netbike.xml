@@ -2,8 +2,8 @@
 {
     using System;
     using System.Xml;
-    using NetBike.Xml.Contracts;
-    using NetBike.Xml.Converters;
+    using Contracts;
+    using Converters;
 
     internal class XmlTypeContext
     {
@@ -18,33 +18,33 @@
             this.contract = contract;
             this.readConverter = readConverter;
             this.writeConverter = writeConverter;
-            this.reader = readConverter != null ? readConverter.ReadXml : NotReadable(contract.ValueType);
-            this.writer = writeConverter != null ? writeConverter.WriteXml : NotWritable(contract.ValueType);
+            reader = readConverter != null ? readConverter.ReadXml : NotReadable(contract.ValueType);
+            writer = writeConverter != null ? writeConverter.WriteXml : NotWritable(contract.ValueType);
         }
 
         public XmlContract Contract
         {
-            get { return this.contract; }
+            get { return contract; }
         }
 
         public IXmlConverter ReadConverter
         {
-            get { return this.readConverter; }
+            get { return readConverter; }
         }
 
         public IXmlConverter WriteConverter
         {
-            get { return this.writeConverter; }
+            get { return writeConverter; }
         }
 
         public Func<XmlReader, XmlSerializationContext, object> ReadXml
         {
-            get { return this.reader; }
+            get { return reader; }
         }
 
         public Action<XmlWriter, object, XmlSerializationContext> WriteXml
         {
-            get { return this.writer; }
+            get { return writer; }
         }
 
         private static Func<XmlReader, XmlSerializationContext, object> NotReadable(Type valueType)

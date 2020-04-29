@@ -1,7 +1,7 @@
 ﻿namespace NetBike.Xml
 {
     using System.Xml;
-    using NetBike.Xml.Contracts;
+    using Contracts;
 
     internal static class XmlExtensions
     {

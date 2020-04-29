@@ -2,10 +2,10 @@
 {
     using System.Collections;
     using System.Collections.Generic;
-    using NetBike.Xml.Contracts;
+    using Contracts;
     using NetBike.Xml.Converters;
     using NetBike.Xml.Converters.Collections;
-    using NetBike.XmlUnit.NUnitAdapter;
+    using XmlUnit.NUnitAdapter;
     using NUnit.Framework;
 
     [TestFixture]

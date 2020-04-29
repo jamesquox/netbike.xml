@@ -33,12 +33,12 @@
 
         public string LocalName
         {
-            get { return this.localName; }
+            get { return localName; }
         }
 
         public string NamespaceUri
         {
-            get { return this.namespaceUri; }
+            get { return namespaceUri; }
         }
 
         public static implicit operator XmlName(string name)
@@ -48,17 +48,17 @@
 
         public override string ToString()
         {
-            if (this.namespaceUri != null)
+            if (namespaceUri != null)
             {
-                return "{" + this.namespaceUri + "}" + this.localName;
+                return "{" + namespaceUri + "}" + localName;
             }
 
-            return this.localName;
+            return localName;
         }
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as XmlName);
+            return Equals(obj as XmlName);
         }
 
         public override int GetHashCode()
@@ -67,11 +67,11 @@
 
             unchecked
             {
-                hashCode = 31 * hashCode + this.localName.GetHashCode();
+                hashCode = 31 * hashCode + localName.GetHashCode();
 
-                if (this.namespaceUri != null)
+                if (namespaceUri != null)
                 {
-                    hashCode = 31 * hashCode + this.namespaceUri.GetHashCode();
+                    hashCode = 31 * hashCode + namespaceUri.GetHashCode();
                 }
             }
 
@@ -85,7 +85,7 @@
                 return false;
             }
 
-            return this.localName == other.localName && this.namespaceUri == other.namespaceUri;
+            return localName == other.localName && namespaceUri == other.namespaceUri;
         }
 
         internal XmlName Create(string localName, string namespaceUri)

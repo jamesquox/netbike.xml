@@ -9,12 +9,12 @@
     {
         public bool CanRead(Type valueType)
         {
-            return this.IsSerializable(valueType);
+            return IsSerializable(valueType);
         }
 
         public bool CanWrite(Type valueType)
         {
-            return this.IsSerializable(valueType);
+            return IsSerializable(valueType);
         }
 
         public void WriteXml(XmlWriter writer, object value, XmlSerializationContext context)

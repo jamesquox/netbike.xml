@@ -33,12 +33,12 @@
 
                 public void Add(object value)
                 {
-                    this.items.Add((TItem)value);
+                    items.Add((TItem)value);
                 }
 
                 public object GetResult()
                 {
-                    return this.items.ToArray();
+                    return items.ToArray();
                 }
             }
         }

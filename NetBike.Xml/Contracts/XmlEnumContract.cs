@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using NetBike.Xml.Contracts.Builders;
+    using Builders;
 
     public sealed class XmlEnumContract : XmlContract
     {
@@ -24,23 +24,23 @@
             }
 
             this.items = new List<XmlEnumItem>(items);
-            this.isFlag = valueType.IsDefined(Types.FlagsAttribute, false);
-            this.underlyingType = Enum.GetUnderlyingType(valueType);
+            isFlag = valueType.IsDefined(Types.FlagsAttribute, false);
+            underlyingType = Enum.GetUnderlyingType(valueType);
         }
 
         public Type UnderlyingType
         {
-            get { return this.underlyingType; }
+            get { return underlyingType; }
         }
 
         public IEnumerable<XmlEnumItem> Items
         {
-            get { return this.items; }
+            get { return items; }
         }
 
         public bool IsFlag
         {
-            get { return this.isFlag; }
+            get { return isFlag; }
         }
     }
 }

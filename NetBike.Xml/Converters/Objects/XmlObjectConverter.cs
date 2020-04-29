@@ -4,8 +4,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
-using NetBike.Xml.Contracts;
-using NetBike.Xml.Converters.Collections;
+using Contracts;
+using Collections;
 
     public class XmlObjectConverter : IXmlConverter
     {
@@ -36,9 +36,9 @@ using NetBike.Xml.Converters.Collections;
 
             foreach (var property in contract.Properties)
             {
-                if (this.CanWriteProperty(property))
+                if (CanWriteProperty(property))
                 {
-                    var propertyValue = this.GetValue(value, property);
+                    var propertyValue = GetValue(value, property);
 
                     if (!property.IsCollection)
                     {
@@ -60,7 +60,7 @@ using NetBike.Xml.Converters.Collections;
             }
 
             var contract = context.Contract.ToObjectContract();
-            var target = this.CreateTarget(contract);
+            var target = CreateTarget(contract);
 
             var propertyInfos = XmlPropertyInfo.GetInfo(contract, reader.NameTable, context);
 
@@ -68,7 +68,7 @@ using NetBike.Xml.Converters.Collections;
             {
                 do
                 {
-                    this.ReadProperty(reader, target, propertyInfos, XmlMappingType.Attribute, context);
+                    ReadProperty(reader, target, propertyInfos, XmlMappingType.Attribute, context);
                 }
                 while (reader.MoveToNextAttribute());
 
@@ -80,7 +80,7 @@ using NetBike.Xml.Converters.Collections;
                 if (contract.InnerTextProperty != null)
                 {
                     var value = context.Deserialize(reader, contract.InnerTextProperty);
-                    this.SetValue(target, contract.InnerTextProperty, value);
+                    SetValue(target, contract.InnerTextProperty, value);
                 }
                 else
                 {
@@ -90,7 +90,7 @@ using NetBike.Xml.Converters.Collections;
                     {
                         if (reader.NodeType == XmlNodeType.Element)
                         {
-                            this.ReadProperty(reader, target, propertyInfos, XmlMappingType.Element, context);
+                            ReadProperty(reader, target, propertyInfos, XmlMappingType.Element, context);
                         }
                         else
                         {
@@ -106,9 +106,9 @@ using NetBike.Xml.Converters.Collections;
                 reader.Read();
             }
 
-            this.SetDefaultProperties(contract, target, propertyInfos);
+            SetDefaultProperties(contract, target, propertyInfos);
 
-            return this.GetResult(target);
+            return GetResult(target);
         }
 
         protected virtual bool CanWriteProperty(XmlProperty property)
@@ -155,7 +155,7 @@ using NetBike.Xml.Converters.Collections;
                     if (propertyInfos[i].CollectionProxy == null)
                     {
                         var value = context.Deserialize(reader, member);
-                        this.SetValue(target, propertyInfos[i].Property, value);
+                        SetValue(target, propertyInfos[i].Property, value);
                     }
                     else
                     {
@@ -168,7 +168,7 @@ using NetBike.Xml.Converters.Collections;
                 }
             }
 
-            this.OnUnknownProperty(reader, target, context);
+            OnUnknownProperty(reader, target, context);
         }
 
         private void SetDefaultProperties(XmlContract contract, object target, XmlPropertyInfo[] propertyInfos)
@@ -183,7 +183,7 @@ using NetBike.Xml.Converters.Collections;
 
                     if (property.DefaultValue != null && property.PropertyInfo.CanWrite)
                     {
-                        this.SetValue(target, property, property.DefaultValue);
+                        SetValue(target, property, property.DefaultValue);
                     }
                     else if (property.IsRequired)
                     {
@@ -193,7 +193,7 @@ using NetBike.Xml.Converters.Collections;
                 else if (propertyState.CollectionProxy != null)
                 {
                     var collection = propertyState.CollectionProxy.GetResult();
-                    this.SetValue(target, propertyState.Property, collection);
+                    SetValue(target, propertyState.Property, collection);
                 }
             }
         }

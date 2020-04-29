@@ -4,7 +4,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Xml;
-    using NetBike.Xml.Contracts;
+    using Contracts;
 
     internal static class Types
     {
