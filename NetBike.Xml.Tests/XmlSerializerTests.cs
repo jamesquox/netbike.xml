@@ -351,6 +351,46 @@ namespace NetBike.Xml.Tests
             Assert.That(actual, IsXml.Equals(expected).WithIgnoreDeclaration());
         }
 
+        [Test]
+        public void SerializeFooContainerWithReferenceExpansionHighestLevel()
+        {
+            var value = new FooContainer
+            {
+                ReferenceA = new FooReference(),
+                ReferenceB = new FooReference()
+            };
+            value.ReferenceA.Reference = value.ReferenceB;
+
+            var serializer = GetSerializer();
+            serializer.Settings.ReferenceHandling = XmlReferenceHandling.Handle;
+            serializer.Settings.ReferenceExpansion = XmlReferenceExpansion.HighestLevel;
+
+            var actual = serializer.ToXml(value);
+            var expected = @"<fooContainer id=""1""><referenceA id=""2""><reference ref=""3"" /></referenceA><referenceB id=""3"" /></fooContainer>";
+
+            Assert.That(actual, IsXml.Equals(expected).WithIgnoreDeclaration());
+        }
+
+        [Test]
+        public void SerializeFooContainerWithReferenceExpansionFirstAccessed()
+        {
+            var value = new FooContainer
+            {
+                ReferenceA = new FooReference(),
+                ReferenceB = new FooReference()
+            };
+            value.ReferenceA.Reference = value.ReferenceB;
+
+            var serializer = GetSerializer();
+            serializer.Settings.ReferenceHandling = XmlReferenceHandling.Handle;
+            serializer.Settings.ReferenceExpansion = XmlReferenceExpansion.FirstAccessed;
+
+            var actual = serializer.ToXml(value);
+            var expected = @"<fooContainer id=""1""><referenceA id=""2""><reference id=""3"" /></referenceA><referenceB ref=""3"" /></fooContainer>";
+
+            Assert.That(actual, IsXml.Equals(expected).WithIgnoreDeclaration());
+        }
+
         private XmlSerializer GetSerializer()
         {
             var settings = new XmlSerializerSettings

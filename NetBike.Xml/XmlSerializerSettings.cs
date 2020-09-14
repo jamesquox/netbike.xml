@@ -106,6 +106,8 @@ namespace NetBike.Xml
 
         public XmlReferenceHandling ReferenceHandling { get; set; }
 
+        public XmlReferenceExpansion ReferenceExpansion { get; set; }
+
         public string ReferenceHandlingIdName { get; set; }
 
         public string ReferenceHandlingReferenceName { get; set; }

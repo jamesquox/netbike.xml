@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 
 namespace NetBike.Xml
 {
@@ -7,18 +6,20 @@ namespace NetBike.Xml
     using System.Collections.Generic;
     using System.Xml;
     using Contracts;
-    using Converters;
 
     public sealed class XmlSerializationContext
     {
         private readonly XmlSerializerSettings settings;
         private XmlContract currentContract;
         private XmlMember currentMember;
+        private int currentLevel;
         private bool initialState;
         private Dictionary<string, object> properties;
         private XmlNameRef typeNameRef;
         private XmlNameRef nullNameRef;
         private XmlReader lastUsedReader;
+        private bool IsBuildObjectGraph;
+        private Dictionary<long, int> _xmlReferenceLevelLookup;
 
         public XmlSerializationContext(XmlSerializerSettings settings)
         {
@@ -49,20 +50,11 @@ namespace NetBike.Xml
             initialState = false;
         }
 
-        public Type ValueType
-        {
-            get { return currentContract.ValueType; }
-        }
+        public Type ValueType => currentContract.ValueType;
 
-        public XmlContract Contract
-        {
-            get { return currentContract; }
-        }
+        public XmlContract Contract => currentContract;
 
-        public XmlMember Member
-        {
-            get { return currentMember; }
-        }
+        public XmlMember Member => currentMember;
 
         public IDictionary<string, object> Properties
         {
@@ -77,10 +69,7 @@ namespace NetBike.Xml
             }
         }
 
-        public XmlSerializerSettings Settings
-        {
-            get { return settings; }
-        }
+        public XmlSerializerSettings Settings => settings;
 
         public XmlContract GetTypeContract(Type valueType)
         {
@@ -92,6 +81,15 @@ namespace NetBike.Xml
             if (valueType == null)
             {
                 throw new ArgumentNullException("valueType");
+            }
+
+            if (settings.ReferenceExpansion == XmlReferenceExpansion.HighestLevel)
+            {
+                // build object graph for later consumption
+                _xmlReferenceLevelLookup = new Dictionary<long, int>();
+                IsBuildObjectGraph = true;
+                Serialize(writer, value, valueType, null);
+                IsBuildObjectGraph = false;
             }
 
             Serialize(writer, value, valueType, null);
@@ -139,13 +137,13 @@ namespace NetBike.Xml
 
         internal void WriteTypeName(XmlWriter writer, Type valueType)
         {
-            var typeName = settings.TypeResolver.GetTypeName(valueType);
+            string typeName = settings.TypeResolver.GetTypeName(valueType);
             writer.WriteAttributeString(settings.TypeAttributeName, typeName);
         }
 
         internal void WriteNull(XmlWriter writer, Type valueType, XmlMember member)
         {
-            var nullValueHandling = settings.NullValueHandling;
+            XmlNullValueHandling nullValueHandling = settings.NullValueHandling;
 
             if (member != null)
             {
@@ -214,7 +212,7 @@ namespace NetBike.Xml
         {
             if (member.IsOpenType)
             {
-                var typeHandling = member.TypeHandling ?? settings.TypeHandling;
+                XmlTypeHandling typeHandling = member.TypeHandling ?? settings.TypeHandling;
 
                 if (typeHandling != XmlTypeHandling.None)
                 {
@@ -231,8 +229,8 @@ namespace NetBike.Xml
 
         internal void WriteXml(XmlWriter writer, object value, XmlMember member, XmlTypeContext typeContext)
         {
-            var lastMember = currentMember;
-            var lastContract = currentContract;
+            XmlMember lastMember = currentMember;
+            XmlContract lastContract = currentContract;
 
             currentMember = member;
             currentContract = typeContext.Contract;
@@ -245,13 +243,13 @@ namespace NetBike.Xml
 
         internal object ReadXml(XmlReader reader, XmlMember member, XmlTypeContext typeContext)
         {
-            var lastMember = currentMember;
-            var lastContract = currentContract;
+            XmlMember lastMember = currentMember;
+            XmlContract lastContract = currentContract;
 
             currentMember = member;
             currentContract = typeContext.Contract;
 
-            var value = typeContext.ReadXml(reader, this);
+            object value = typeContext.ReadXml(reader, this);
 
             currentMember = lastMember;
             currentContract = lastContract;
@@ -272,7 +270,7 @@ namespace NetBike.Xml
             }
             else
             {
-                var typeContext = settings.GetTypeContext(memberType);
+                XmlTypeContext typeContext = settings.GetTypeContext(memberType);
                 WriteXml(writer, value, member ?? typeContext.Contract.Root, typeContext);
             }
         }
@@ -286,7 +284,10 @@ namespace NetBike.Xml
 
             if (value == null)
             {
-                WriteNull(writer, memberType, member);
+                if (!IsBuildObjectGraph)
+                {
+                    WriteNull(writer, memberType, member);
+                }
                 return;
             }
 
@@ -295,7 +296,6 @@ namespace NetBike.Xml
                 return;
             }
 
-            Type valueType;
             XmlTypeContext context = null;
 
             if (member == null)
@@ -304,11 +304,11 @@ namespace NetBike.Xml
                 member = context.Contract.Root;
             }
 
-            var shouldWriteTypeName = TryResolveValueType(value, ref member, out valueType);
+            bool shouldWriteTypeName = TryResolveValueType(value, ref member, out Type valueType);
 
             if (member.DefaultValue != null)
             {
-                var defaultValueHandling = member.DefaultValueHandling ?? settings.DefaultValueHandling;
+                XmlDefaultValueHandling defaultValueHandling = member.DefaultValueHandling ?? settings.DefaultValueHandling;
 
                 if (defaultValueHandling == XmlDefaultValueHandling.Ignore && value.Equals(member.DefaultValue))
                 {
@@ -324,27 +324,63 @@ namespace NetBike.Xml
             switch (member.MappingType)
             {
                 case XmlMappingType.Element:
-                    writer.WriteStartElement(member.Name);
-
-
-                    if (initialState)
+                    if (!IsBuildObjectGraph)
                     {
-                        initialState = false;
-                        WriteNamespaces(writer);
-                    }
+                        writer.WriteStartElement(member.Name);
 
-                    if (shouldWriteTypeName)
-                    {
-                        WriteTypeName(writer, valueType);
-                    }
-
-                    if (context.Contract is XmlObjectContract && !_objectIgnoreTypes.Contains(context.Contract.Name.LocalName))
-                    {
-                        var id = settings.ReferenceHandlingGenerator.GetId(value, out bool firstTime);
-                        if (firstTime)
+                        if (initialState)
                         {
-                            writer.WriteAttributeString(Settings.ReferenceHandlingIdName, id.ToString());
+                            initialState = false;
+                            WriteNamespaces(writer);
+                        }
+
+                        if (shouldWriteTypeName)
+                        {
+                            WriteTypeName(writer, valueType);
+                        }
+                    }
+
+
+                    if (context.Contract is XmlObjectContract &&
+                        !_objectIgnoreTypes.Contains(context.Contract.Name.LocalName))
+                    {
+                        long id = settings.ReferenceHandlingGenerator.GetId(value, out bool firstTime);
+
+                        if (IsBuildObjectGraph)
+                        {
+                            if (firstTime)
+                            {
+                                _xmlReferenceLevelLookup.Add(id, currentLevel);
+                                currentLevel++;
+                                WriteXml(writer, value, member, context);
+                                currentLevel--;
+                            }
+                            else
+                            {
+                                if (Settings.ReferenceHandling == XmlReferenceHandling.Throw)
+                                {
+                                    throw new Exception("Found reference loop. Please set ReferenceHandling setting to XmlReferenceHandling.Handle");
+                                }
+                                if (currentLevel < _xmlReferenceLevelLookup[id])
+                                {
+                                    _xmlReferenceLevelLookup[id] = currentLevel;
+                                }
+                            }
+                            return;
+                        }
+
+                        bool isExpansionElement = Settings.ReferenceExpansion == XmlReferenceExpansion.FirstAccessed
+                            ? firstTime
+                            : currentLevel == _xmlReferenceLevelLookup[id];
+                        if (isExpansionElement)
+                        {
+                            if (Settings.ReferenceHandling == XmlReferenceHandling.Handle)
+                            {
+                                writer.WriteAttributeString(Settings.ReferenceHandlingIdName, id.ToString());
+                            }
+                            currentLevel++;
                             WriteXml(writer, value, member, context);
+                            currentLevel--;
                         }
                         else
                         {
@@ -357,16 +393,30 @@ namespace NetBike.Xml
                     }
                     else
                     {
-                        WriteXml(writer, value, member, context);
+                        if (!IsBuildObjectGraph)
+                        {
+                            WriteXml(writer, value, member, context);
+                        }
                     }
 
-                    writer.WriteEndElement();
+                    if (!IsBuildObjectGraph)
+                    {
+                        writer.WriteEndElement();
+                    }
                     break;
 
                 case XmlMappingType.Attribute:
-                    writer.WriteStartAttribute(member.Name);
+                    if (!IsBuildObjectGraph)
+                    {
+                        writer.WriteStartAttribute(member.Name);
+                    }
+
                     WriteXml(writer, value, member, context);
-                    writer.WriteEndAttribute();
+
+                    if (!IsBuildObjectGraph)
+                    {
+                        writer.WriteEndAttribute();
+                    }
                     break;
 
                 case XmlMappingType.InnerText:
@@ -375,7 +425,7 @@ namespace NetBike.Xml
             }
         }
 
-        private static string[] _objectIgnoreTypes = {"List", "Nullable", "ArrayOfByte" };
+        private static readonly string[] _objectIgnoreTypes = { "List", "Nullable", "ArrayOfByte" };
 
         private object Deserialize(XmlReader reader, Type valueType, XmlMember member)
         {
@@ -411,7 +461,7 @@ namespace NetBike.Xml
                 }
             }
 
-            var typeInfo = settings.GetTypeContext(valueType);
+            XmlTypeContext typeInfo = settings.GetTypeContext(valueType);
 
             if (member == null)
             {
@@ -423,7 +473,7 @@ namespace NetBike.Xml
 
         private void WriteNamespaces(XmlWriter writer)
         {
-            foreach (var item in settings.Namespaces)
+            foreach (XmlNamespace item in settings.Namespaces)
             {
                 writer.WriteNamespace(item);
             }
