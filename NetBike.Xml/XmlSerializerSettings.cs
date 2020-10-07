@@ -35,7 +35,7 @@ namespace NetBike.Xml
         private XmlName nullAttributeName;
         private XmlReaderSettings readerSettings;
         private XmlWriterSettings writerSettings;
-
+        internal bool IsBuildingObjectGraph;
         static XmlSerializerSettings()
         {
             DefaultConverters = new XmlConverterCollection
@@ -63,6 +63,7 @@ namespace NetBike.Xml
                 new XmlListConverter(),
                 new XmlDictionaryConverter(),
                 new XmlKeyValuePairConverter(),
+                new XmlOptionalConverter(),
                 new XmlNullableConverter(),
                 new XmlEnumerableConverter(),
                 new XmlObjectConverter()
@@ -82,6 +83,7 @@ namespace NetBike.Xml
             encoding = Encoding.UTF8;
             TypeHandling = XmlTypeHandling.Auto;
             NullValueHandling = XmlNullValueHandling.Ignore;
+            NoneValueHandling = XmlNoneValueHandling.Ignore;
             DefaultValueHandling = XmlDefaultValueHandling.Include;
             ReferenceHandling = XmlReferenceHandling.Throw;
             ReferenceHandlingIdName = "id";
@@ -101,6 +103,11 @@ namespace NetBike.Xml
         public XmlTypeHandling TypeHandling { get; set; }
 
         public XmlNullValueHandling NullValueHandling { get; set; }
+
+        /// <summary>
+        /// How to handle <see cref="OptionalSharp.Optional{T}.HasValue"/> values.
+        /// </summary>
+        public XmlNoneValueHandling NoneValueHandling { get; set; }
 
         public XmlDefaultValueHandling DefaultValueHandling { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿namespace NetBike.Xml.Tests.Samples
 {
     using System;
+    using NUnit.Framework;
 
     public class Foo : IFoo
     {

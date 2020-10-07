@@ -1,39 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Product>NetBike.Xml.Tests</Product>
-    <Company>NetBike.Xml.Tests</Company>
-    <Description>Fast, flexible and high customizable XML serializer for converting between .NET objects and XML.</Description>
-    <AssemblyTitle>NetBike.Xml.Tests</AssemblyTitle>
-    <Authors>a7b0</Authors>
-    <AssemblyName>NetBike.Xml.Tests</AssemblyName>
+    <ProjectGuid>{CB736CD3-2055-467E-91CA-66B90695D222}</ProjectGuid>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyTitle>NetBike.Xml.Tests</AssemblyTitle>
+    <Company>NetBike</Company>
+    <Product>NetBike.Xml.Tests</Product>
+    <Copyright>Copyright © NetBike 2015</Copyright>
   </PropertyGroup>
-
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-    <PackageReference Include="NetBike.XmlUnit.NUnitAdapter3" Version="0.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <PackageReference Include="NetBike.XmlUnit" Version="0.3.0" />
+    <PackageReference Include="NetBike.XmlUnit.NUnitAdapter3" Version="0.3.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NetBike.Xml\NetBike.Xml.csproj" />
   </ItemGroup>
-
 </Project>

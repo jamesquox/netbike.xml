@@ -6,6 +6,7 @@ namespace NetBike.Xml
     using System.Collections.Generic;
     using System.Xml;
     using Contracts;
+    using OptionalSharp;
 
     public sealed class XmlSerializationContext
     {
@@ -18,7 +19,6 @@ namespace NetBike.Xml
         private XmlNameRef typeNameRef;
         private XmlNameRef nullNameRef;
         private XmlReader lastUsedReader;
-        private bool IsBuildObjectGraph;
         private Dictionary<long, int> _xmlReferenceLevelLookup;
 
         public XmlSerializationContext(XmlSerializerSettings settings)
@@ -87,9 +87,9 @@ namespace NetBike.Xml
             {
                 // build object graph for later consumption
                 _xmlReferenceLevelLookup = new Dictionary<long, int>();
-                IsBuildObjectGraph = true;
+                Settings.IsBuildingObjectGraph = true;
                 Serialize(writer, value, valueType, null);
-                IsBuildObjectGraph = false;
+                Settings.IsBuildingObjectGraph = false;
             }
 
             Serialize(writer, value, valueType, null);
@@ -137,12 +137,24 @@ namespace NetBike.Xml
 
         internal void WriteTypeName(XmlWriter writer, Type valueType)
         {
+            // don't write to writer if building object graph
+            if (Settings.IsBuildingObjectGraph)
+            {
+                return;
+            }
+
             string typeName = settings.TypeResolver.GetTypeName(valueType);
             writer.WriteAttributeString(settings.TypeAttributeName, typeName);
         }
 
         internal void WriteNull(XmlWriter writer, Type valueType, XmlMember member)
         {
+            // don't write to writer if building object graph
+            if (Settings.IsBuildingObjectGraph)
+            {
+                return;
+            }
+
             XmlNullValueHandling nullValueHandling = settings.NullValueHandling;
 
             if (member != null)
@@ -282,12 +294,39 @@ namespace NetBike.Xml
                 throw new ArgumentNullException("writer");
             }
 
-            if (value == null)
+            // ignore optional values with none value
+            if (value is IAnyOptional optional)
             {
-                if (!IsBuildObjectGraph)
+                if (!optional.HasValue)
+                {
+                    if (Settings.NoneValueHandling == XmlNoneValueHandling.Ignore)
+                    {
+                        return;
+                    }
+                    // Output default values for inner types
+                    var innerType = optional.GetInnerType();
+                    var nullableInnerType = innerType.GetUnderlyingNullableType();
+                    if (nullableInnerType != null)
+                    {
+                        WriteNull(writer, memberType, member);
+                        return;
+                    }
+                    else if (innerType.IsClass)
+                    {
+                        WriteNull(writer, memberType, member);
+                        return;
+                    }
+                }
+                else if (optional.Value == null)
                 {
                     WriteNull(writer, memberType, member);
+                    return;
                 }
+            }
+
+            if (value == null)
+            {
+                WriteNull(writer, memberType, member);
                 return;
             }
 
@@ -295,6 +334,7 @@ namespace NetBike.Xml
             {
                 return;
             }
+
 
             XmlTypeContext context = null;
 
@@ -324,108 +364,124 @@ namespace NetBike.Xml
             switch (member.MappingType)
             {
                 case XmlMappingType.Element:
-                    if (!IsBuildObjectGraph)
-                    {
-                        writer.WriteStartElement(member.Name);
-
-                        if (initialState)
-                        {
-                            initialState = false;
-                            WriteNamespaces(writer);
-                        }
-
-                        if (shouldWriteTypeName)
-                        {
-                            WriteTypeName(writer, valueType);
-                        }
-                    }
-
-
-                    if (context.Contract is XmlObjectContract &&
-                        !_objectIgnoreTypes.Contains(context.Contract.Name.LocalName))
-                    {
-                        long id = settings.ReferenceHandlingGenerator.GetId(value, out bool firstTime);
-
-                        if (IsBuildObjectGraph)
-                        {
-                            if (firstTime)
-                            {
-                                _xmlReferenceLevelLookup.Add(id, currentLevel);
-                                currentLevel++;
-                                WriteXml(writer, value, member, context);
-                                currentLevel--;
-                            }
-                            else
-                            {
-                                if (Settings.ReferenceHandling == XmlReferenceHandling.Throw)
-                                {
-                                    throw new Exception("Found reference loop. Please set ReferenceHandling setting to XmlReferenceHandling.Handle");
-                                }
-                                if (currentLevel < _xmlReferenceLevelLookup[id])
-                                {
-                                    _xmlReferenceLevelLookup[id] = currentLevel;
-                                }
-                            }
-                            return;
-                        }
-
-                        bool isExpansionElement = Settings.ReferenceExpansion == XmlReferenceExpansion.FirstAccessed
-                            ? firstTime
-                            : currentLevel == _xmlReferenceLevelLookup[id];
-                        if (isExpansionElement)
-                        {
-                            if (Settings.ReferenceHandling == XmlReferenceHandling.Handle)
-                            {
-                                writer.WriteAttributeString(Settings.ReferenceHandlingIdName, id.ToString());
-                            }
-                            currentLevel++;
-                            WriteXml(writer, value, member, context);
-                            currentLevel--;
-                        }
-                        else
-                        {
-                            if (Settings.ReferenceHandling == XmlReferenceHandling.Throw)
-                            {
-                                throw new Exception("Found reference loop. Please set ReferenceHandling setting to XmlReferenceHandling.Handle");
-                            }
-                            writer.WriteAttributeString(Settings.ReferenceHandlingReferenceName, id.ToString());
-                        }
-                    }
-                    else
-                    {
-                        if (!IsBuildObjectGraph)
-                        {
-                            WriteXml(writer, value, member, context);
-                        }
-                    }
-
-                    if (!IsBuildObjectGraph)
-                    {
-                        writer.WriteEndElement();
-                    }
+                    WriteElement(writer, value, member, context, valueType, shouldWriteTypeName);
                     break;
 
                 case XmlMappingType.Attribute:
-                    if (!IsBuildObjectGraph)
+                    if (!Settings.IsBuildingObjectGraph)
                     {
                         writer.WriteStartAttribute(member.Name);
                     }
 
                     WriteXml(writer, value, member, context);
 
-                    if (!IsBuildObjectGraph)
+                    if (!Settings.IsBuildingObjectGraph)
                     {
                         writer.WriteEndAttribute();
                     }
                     break;
 
                 case XmlMappingType.InnerText:
-                    WriteXml(writer, value, member, context);
+                    if (!Settings.IsBuildingObjectGraph)
+                    {
+                        WriteXml(writer, value, member, context);
+                    }
                     break;
             }
         }
 
-        private static readonly string[] _objectIgnoreTypes = { "List", "Nullable", "ArrayOfByte" };
+        internal void WriteElement(XmlWriter writer, object value, XmlMember member, XmlTypeContext context, Type valueType, bool shouldWriteTypeName)
+        {
+            if (!Settings.IsBuildingObjectGraph)
+            {
+                writer.WriteStartElement(member.Name);
+
+                if (initialState)
+                {
+                    initialState = false;
+                    WriteNamespaces(writer);
+                }
+
+                if (shouldWriteTypeName)
+                {
+                    WriteTypeName(writer, valueType);
+                }
+            }
+
+            var isCollection = !context.Contract.ValueType.Equals(typeof(string)) &&
+                context.Contract.ValueType.IsEnumerable();
+
+            if (context.Contract is XmlObjectContract &&
+                context.Contract.ValueType.IsClass &&
+                !context.Contract.ValueType.IsOptional() &&
+                !isCollection)
+            {
+                long id = settings.ReferenceHandlingGenerator.GetId(value, out bool firstTime);
+
+                if (Settings.IsBuildingObjectGraph)
+                {
+                    if (firstTime)
+                    {
+                        _xmlReferenceLevelLookup.Add(id, currentLevel);
+                        currentLevel++;
+                        WriteXml(writer, value, member, context);
+                        currentLevel--;
+                    }
+                    else
+                    {
+                        if (Settings.ReferenceHandling == XmlReferenceHandling.Throw)
+                        {
+                            throw new Exception("Found reference loop. Please set ReferenceHandling setting to XmlReferenceHandling.Handle");
+                        }
+                        if (currentLevel < _xmlReferenceLevelLookup[id])
+                        {
+                            _xmlReferenceLevelLookup[id] = currentLevel;
+                        }
+                    }
+                    // stop processing
+                    return;
+                }
+
+                bool isExpansionElement = Settings.ReferenceExpansion == XmlReferenceExpansion.FirstAccessed
+                    ? firstTime
+                    : currentLevel == _xmlReferenceLevelLookup[id];
+                if (isExpansionElement)
+                {
+                    if (Settings.ReferenceExpansion == XmlReferenceExpansion.HighestLevel)
+                    {
+                        // element should only be expanded once - prevents expansion of elements on the same level
+                        _xmlReferenceLevelLookup[id] = -1;
+                    }
+                    if (Settings.ReferenceHandling == XmlReferenceHandling.Handle)
+                    {
+                        writer.WriteAttributeString(Settings.ReferenceHandlingIdName, id.ToString());
+                    }
+                    currentLevel++;
+                    WriteXml(writer, value, member, context);
+                    currentLevel--;
+                }
+                else
+                {
+                    if (Settings.ReferenceHandling == XmlReferenceHandling.Throw)
+                    {
+                        throw new Exception("Found reference loop. Please set ReferenceHandling setting to XmlReferenceHandling.Handle");
+                    }
+                    writer.WriteAttributeString(Settings.ReferenceHandlingReferenceName, id.ToString());
+                }
+            }
+            else
+            {
+                if (!Settings.IsBuildingObjectGraph || isCollection)
+                {
+                    WriteXml(writer, value, member, context);
+                }
+            }
+
+            if (!Settings.IsBuildingObjectGraph)
+            {
+                writer.WriteEndElement();
+            }
+        }
 
         private object Deserialize(XmlReader reader, Type valueType, XmlMember member)
         {
@@ -473,6 +529,12 @@ namespace NetBike.Xml
 
         private void WriteNamespaces(XmlWriter writer)
         {
+            // don't write to writer if building object graph
+            if (Settings.IsBuildingObjectGraph)
+            {
+                return;
+            }
+
             foreach (XmlNamespace item in settings.Namespaces)
             {
                 writer.WriteNamespace(item);

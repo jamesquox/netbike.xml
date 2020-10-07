@@ -95,7 +95,7 @@
             };
 
             var actual = GetConverter().ToXml(value, settings: settings);
-            var expected = @"<xml><id>1</id><name xsi:nil=""true"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" /></xml>";
+            var expected = @"<xml><id>1</id><name p2:nil=""true"" xmlns:p2=""http://www.w3.org/2001/XMLSchema-instance"" /><reference p2:nil=""true"" xmlns:p2=""http://www.w3.org/2001/XMLSchema-instance"" /><enumValue p2:nil=""true"" xmlns:p2=""http://www.w3.org/2001/XMLSchema-instance"" /></xml>";
 
             Assert.That(actual, IsXml.Equals(expected).WithIgnore(XmlComparisonType.NamespacePrefix));
         }

@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Xml;
     using Contracts;
+    using OptionalSharp;
 
     internal static class Types
     {
@@ -37,6 +38,8 @@
         public static readonly Type EnumerableDefinition = typeof(IEnumerable<>);
 
         public static readonly Type NullableDefinition = typeof(Nullable<>);
+
+        public static readonly Type OptionalDefinition = typeof(Optional<>);
 
         public static readonly Type XmlReader = typeof(XmlReader);
 

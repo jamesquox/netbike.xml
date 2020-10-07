@@ -6,6 +6,7 @@
     using System.Reflection;
     using System.Xml.Serialization;
     using Builders;
+    using OptionalSharp;
 
     public class XmlContractResolver : IXmlContractResolver
     {
@@ -119,6 +120,13 @@
             if (itemType == null)
             {
                 return null;
+            }
+
+            // Unwrap Optional<>
+            var optionalInnerType = itemType.GetUnderlyingOptionalType();
+            if (optionalInnerType != null)
+            {
+                itemType = optionalInnerType;
             }
 
             return new XmlItem(itemType, ResolveName(itemType));

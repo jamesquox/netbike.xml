@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Xml;
     using Contracts;
+    using OptionalSharp;
 
     public abstract class XmlCollectionConverter : IXmlConverter
     {
@@ -25,57 +26,64 @@
             }
 
             var collectionItem = GetCollectionItem(context);
-
             if (collectionItem == null)
             {
                 throw new XmlSerializationException(string.Format("XML contract of \"{0}\" must contains collection item", context.ValueType));
             }
 
+
+
             Type lastItemType = null;
             XmlTypeContext typeContext = null;
 
-            foreach (var item in (IEnumerable)value)
+            foreach (var listItem in (IEnumerable)value)
             {
+                object item = listItem;
+
+                // ignore optional none and unwrap optional because we've already done that in XmlContractResolver.ResolveItem
+                if (listItem is IAnyOptional optional)
+                {
+                    if (!optional.HasValue)
+                    {
+                        if (context.Settings.NoneValueHandling == XmlNoneValueHandling.Ignore)
+                        {
+                            continue;
+                        }
+                        // Output default values for inner types
+                        var innerType = optional.GetInnerType();
+                        var nullableInnerType = innerType.GetUnderlyingNullableType();
+                        if (nullableInnerType != null)
+                        {
+                            context.WriteNull(writer, collectionItem.ValueType, collectionItem);
+                            continue;
+                        }
+                        else if (innerType.IsClass)
+                        {
+                            context.WriteNull(writer, collectionItem.ValueType, collectionItem);
+                            continue;
+                        }
+                    }
+
+                    item = optional.Value;
+                }
+
                 if (item == null)
                 {
                     context.WriteNull(writer, collectionItem.ValueType, collectionItem);
+                    continue;
                 }
-                else
+
+                var member = (XmlMember)collectionItem;
+                var shouldWriteTypeName = context.TryResolveValueType(item, ref member, out Type itemType);
+
+                if (itemType != lastItemType)
                 {
-                    Type itemType;
-                    var member = (XmlMember)collectionItem;
-                    var shouldWriteTypeName = context.TryResolveValueType(item, ref member, out itemType);
-
-                    if (itemType != lastItemType)
-                    {
-                        typeContext = context.Settings.GetTypeContext(itemType);
-                        lastItemType = itemType;
-                    }
-
-                    writer.WriteStartElement(member.Name);
-
-                    if (shouldWriteTypeName)
-                    {
-                        context.WriteTypeName(writer, lastItemType);
-                    }
-
-                    var id = context.Settings.ReferenceHandlingGenerator.GetId(item, out bool firstTime);
-                    if (firstTime)
-                    {
-                        writer.WriteAttributeString(context.Settings.ReferenceHandlingIdName, id.ToString());
-                        context.WriteXml(writer, item, member, typeContext);
-                    }
-                    else
-                    {
-                        if (context.Settings.ReferenceHandling == XmlReferenceHandling.Throw)
-                        {
-                            throw new Exception("Found reference loop. Please set ReferenceHandling setting to XmlReferenceHandling.Handle");
-                        }
-                        writer.WriteAttributeString(context.Settings.ReferenceHandlingReferenceName, id.ToString());
-                    }
-
-                    writer.WriteEndElement();
+                    typeContext = context.Settings.GetTypeContext(itemType);
+                    lastItemType = itemType;
                 }
+
+                // start writing element
+                context.WriteElement(writer, item, member, typeContext, itemType, shouldWriteTypeName);
             }
         }
 
