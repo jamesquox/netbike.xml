@@ -392,6 +392,7 @@ namespace NetBike.Xml
 
         internal void WriteElement(XmlWriter writer, object value, XmlMember member, XmlTypeContext context, Type valueType, bool shouldWriteTypeName)
         {
+            var contractValueType = context.Contract.ValueType;
             if (!Settings.IsBuildingObjectGraph)
             {
                 writer.WriteStartElement(member.Name);
@@ -408,15 +409,22 @@ namespace NetBike.Xml
                 }
             }
 
-            var isCollection = !context.Contract.ValueType.Equals(typeof(string)) &&
-                context.Contract.ValueType.IsEnumerable();
+            var isCollection = !contractValueType.Equals(typeof(string)) &&
+                contractValueType.IsEnumerable();
+
+            object referencedValue = value;
+
+            if (value is IAnyOptional optValue && optValue.HasValue)
+            {
+                referencedValue = optValue.Value;
+            }
+            var isOptionalClass = contractValueType.IsOptional() && contractValueType.GetUnderlyingOptionalType().IsClass;
 
             if (context.Contract is XmlObjectContract &&
-                context.Contract.ValueType.IsClass &&
-                !context.Contract.ValueType.IsOptional() &&
+                (contractValueType.IsClass || isOptionalClass) &&
                 !isCollection)
             {
-                long id = settings.ReferenceHandlingGenerator.GetId(value, out bool firstTime);
+                long id = settings.ReferenceHandlingGenerator.GetId(referencedValue, out bool firstTime);
 
                 if (Settings.IsBuildingObjectGraph)
                 {

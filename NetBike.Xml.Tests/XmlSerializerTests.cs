@@ -391,6 +391,28 @@ namespace NetBike.Xml.Tests
             Assert.That(actual, IsXml.Equals(expected).WithIgnoreDeclaration());
         }
 
+        [Test]
+        public void SerializeFooContainerWithReferenceExpansionFirstAccessedOptional()
+        {
+            var value = new FooContainerOptionals
+            {
+                ReferenceA = new FooReference(),
+                ReferenceB = new FooReference()
+            };
+            value.ReferenceA.Value.Reference = value.ReferenceB.Value;
+
+            var serializer = GetSerializer();
+            serializer.Settings.ReferenceHandling = XmlReferenceHandling.Handle;
+            serializer.Settings.ReferenceExpansion = XmlReferenceExpansion.FirstAccessed;
+            serializer.Settings.OmitXmlDeclaration = true;
+            serializer.Settings.Namespaces.Clear();
+
+            var actual = serializer.ToXml(value);
+            var expected = @"<fooContainerOptionals id=""1""><referenceB id=""2"" /><referenceA id=""3""><reference ref=""2"" /></referenceA></fooContainerOptionals>";
+
+            Assert.That(actual, IsXml.Equals(expected).WithIgnoreDeclaration());
+        }
+
         private XmlSerializer GetSerializer()
         {
             var settings = new XmlSerializerSettings
