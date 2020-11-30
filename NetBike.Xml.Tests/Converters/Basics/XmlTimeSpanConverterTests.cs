@@ -14,13 +14,12 @@
             return new XmlTimeSpanConverter();
         }
 
-        protected override IEnumerable<BasicSample> GetSamples()
-        {
-            return new BasicSample[]
+        protected static IEnumerable<BasicSample> Samples =>
+            new []
             {
                 new BasicSample("PT0S", TimeSpan.Zero),
                 new BasicSample("PT2M34S", new TimeSpan(0, 2, 34)),
             };
-        }
+        
     }
 }

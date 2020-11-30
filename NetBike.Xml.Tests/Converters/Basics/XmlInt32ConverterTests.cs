@@ -14,9 +14,7 @@
             return new XmlInt32Converter();
         }
 
-        protected override IEnumerable<BasicSample> GetSamples()
-        {
-            yield return new BasicSample("123", 123);
-        }
+        protected static IEnumerable<BasicSample> Samples => 
+            new[] { new BasicSample("123", 123) };
     }
 }

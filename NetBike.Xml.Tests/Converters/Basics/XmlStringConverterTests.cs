@@ -13,9 +13,9 @@
             return new XmlStringConverter();
         }
 
-        protected override IEnumerable<BasicSample> GetSamples()
-        {
-            yield return new BasicSample("string", "string");
-        }
+        protected static IEnumerable<BasicSample> Samples =>
+            new[]{
+                new BasicSample("string", "string")
+            };
     }
 }

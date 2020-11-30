@@ -13,13 +13,11 @@
             return new XmlDoubleConverter();
         }
 
-        protected override IEnumerable<BasicSample> GetSamples()
-        {
-            return new BasicSample[] 
+        protected static IEnumerable<BasicSample> Samples => 
+            new BasicSample[] 
             { 
                 new BasicSample("123", 123.0),
                 new BasicSample("1.2345", 1.2345)
             };
-        }
     }
 }

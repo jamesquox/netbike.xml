@@ -8,11 +8,6 @@ namespace NetBike.Xml.Tests.Converters.Basics
 
     public abstract class XmlBasicConverterBaseTests<TValue>
     {
-        public IEnumerable<BasicSample> Samples
-        {
-            get { return GetSamples(); }
-        }
-
         [Test]
         public void CanReadTest()
         {
@@ -58,8 +53,6 @@ namespace NetBike.Xml.Tests.Converters.Basics
         }
 
         protected abstract IXmlConverter GetConverter();
-
-        protected abstract IEnumerable<BasicSample> GetSamples();
 
         private static XmlMember GetAttributeMember()
         {
