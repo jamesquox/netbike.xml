@@ -409,20 +409,20 @@ namespace NetBike.Xml
                 }
             }
 
-            var isCollection = !contractValueType.Equals(typeof(string)) &&
-                contractValueType.IsEnumerable();
-
             object referencedValue = value;
 
             if (value is IAnyOptional optValue && optValue.HasValue)
             {
+                contractValueType = optValue.GetInnerType();
                 referencedValue = optValue.Value;
             }
-            var isOptionalClass = contractValueType.IsOptional() && contractValueType.GetUnderlyingOptionalType().IsClass;
 
-            if (context.Contract is XmlObjectContract &&
-                (contractValueType.IsClass || isOptionalClass) &&
-                !isCollection)
+            var isCollection = !contractValueType.Equals(typeof(string)) &&
+                contractValueType.IsEnumerable();
+
+            var isModel = contractValueType.IsClass && contractValueType != typeof(string);
+
+            if (context.Contract is XmlObjectContract && isModel && !isCollection)
             {
                 long id = settings.ReferenceHandlingGenerator.GetId(referencedValue, out bool firstTime);
 
